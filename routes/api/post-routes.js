@@ -1,5 +1,6 @@
 const router = require('express').Router();
-const { Post, User } = require('../../models');
+const sequelize = require('../../config/connection');
+const { User, Like, Post } = require('../../models');
 
 router.get('/', (req, res) => {
     Post.findAll({
@@ -56,6 +57,34 @@ router.post('/', (req, res) => {
         console.log(err);
         res.status(500).json(err);
     });
+});
+
+router.put('/like', (req, res) => {
+   Like.create({
+       user_id: req.body.user_id,
+       post_id: req.body.post_id
+   }).then(() => {
+       return Post.findOne({
+           where: {
+               id: req.body.post_id
+           },
+           attributes: [
+               'id',
+               'content_data',
+               'title',
+               'created_at,'
+           ]
+           [
+               sequelize.literal('(SELECT COUNT(*) FROM like WHERE post.id = like.post_id)'),
+               'like_count'
+           ]
+       })
+       .then(dbPostData => res.json(dbPostData))
+       .catch(err => {
+           console.log(err);
+           res.status(400).json(err);
+       });
+   });
 });
 
 router.put('/:id', (req, res) => {
