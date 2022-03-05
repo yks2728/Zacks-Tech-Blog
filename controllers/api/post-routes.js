@@ -79,24 +79,29 @@ router.get("/:id", (req, res) => {
 });
 
 router.post("/", (req, res) => {
-  Post.create({
-    title: req.body.title,
-    content_data: req.body.content_data,
-    user_id: req.body.user_id,
-  })
-    .then((dbPostData) => res.json(dbPostData))
-    .catch((err) => {
-      console.log(err);
-      res.status(500).json(err);
-    });
+  if (req.session) {
+    Post.create({
+      title: req.body.title,
+      content_data: req.body.content_data,
+      user_id: req.session.user_id,
+    })
+      .then((dbPostData) => res.json(dbPostData))
+      .catch((err) => {
+        console.log(err);
+        res.status(500).json(err);
+      });
+  }
 });
 
-router.put('/upvote', (req, res) => {
+router.put("/upvote", (req, res) => {
   // custom static method created in models/Post.js
   if (req.session) {
-    Post.upvote({ ...req.body, user_id: req.session.user_id }, { Vote, Comment, User })
-      .then(updatedVoteData => res.json(updatedVoteData))
-      .catch(err => {
+    Post.upvote(
+      { ...req.body, user_id: req.session.user_id },
+      { Vote, Comment, User }
+    )
+      .then((updatedVoteData) => res.json(updatedVoteData))
+      .catch((err) => {
         console.log(err);
         res.status(500).json(err);
       });
