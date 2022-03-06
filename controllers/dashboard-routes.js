@@ -10,7 +10,7 @@ router.get("/", (req, res) => {
     },
     attributes: [
       "id",
-      "content-data",
+      "content_data",
       "title",
       "created_at",
       [

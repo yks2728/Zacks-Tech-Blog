@@ -8,7 +8,7 @@ router.get("/", (req, res) => {
     order: [["created_at", "DESC"]],
     attributes: [
       "id",
-      "post_url",
+      "content_data",
       "title",
       "created_at",
       [
@@ -48,7 +48,7 @@ router.get("/:id", (req, res) => {
     },
     attributes: [
       "id",
-      "post_url",
+      "content_data",
       "title",
       "created_at",
       [
@@ -82,7 +82,7 @@ router.post("/", (req, res) => {
   if (req.session) {
     Post.create({
       title: req.body.title,
-      post_url: req.body.post_url,
+      content_data: req.body.content_data,
       user_id: req.session.user_id,
     })
       .then((dbPostData) => res.json(dbPostData))
@@ -109,12 +109,14 @@ router.put("/upvote", (req, res) => {
 });
 
 router.delete("/:id", (req, res) => {
+  console.log(req.params.id);
   Post.destroy({
     where: {
       id: req.params.id,
     },
   })
     .then((dbPostData) => {
+      console.log(dbPostData);
       if (!dbPostData) {
         res.status(404).json({ message: "No post found with this id" });
         return;
