@@ -13,7 +13,7 @@ class Post extends Model {
         },
         attributes: [
           "id",
-          "post_url",
+          "content_data",
           "title",
           "created_at",
           [
@@ -22,6 +22,22 @@ class Post extends Model {
             ),
             "vote_count",
           ],
+        ],
+        include: [
+          {
+            model: models.Comment,
+            attributes: [
+              "id",
+              "comment_text",
+              "post_id",
+              "user_id",
+              "created_at",
+            ],
+            include: {
+              model: models.User,
+              attributes: ["username"],
+            },
+          },
         ],
       });
     });
